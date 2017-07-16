@@ -19,6 +19,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="com.vaio.p2.tasktimer.AppProvider"
+            android:authorities="com.vaio.p2.tasktimer.provider"
+            android:exported="false"/>
+
     </application>
+
 
 </manifest>
