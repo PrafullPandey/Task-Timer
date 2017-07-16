@@ -220,7 +220,7 @@ public class AppProvider extends ContentProvider {
                 db = mOpenHelper.getWritableDatabase();
                 long taskId=TaskContract.getTaskid(uri);
                 selectionCriteria = TaskContract.Column._ID+" = "+taskId;
-                if(selectionCriteria!=null && selectionCriteria.length()>=0){
+                if(s!=null && s.length()>=0){
                     selectionCriteria+=" AND ("+s+")";
                 }
                 count = db.delete(TaskContract.TABLE_NAME ,selectionCriteria ,strings);
@@ -272,8 +272,8 @@ public class AppProvider extends ContentProvider {
                 db = mOpenHelper.getWritableDatabase();
                 long taskId=TaskContract.getTaskid(uri);
                 selectionCriteria = TaskContract.Column._ID+" = "+taskId;
-                if(selectionCriteria!=null && selectionCriteria.length()>=0){
-                    selectionCriteria+=" AND ("+s+")";
+                if(s!=null && s.length()>=0){
+                    selectionCriteria= selectionCriteria +" AND ( "+s+" )";
                 }
                 count = db.update(TaskContract.TABLE_NAME ,contentValues ,selectionCriteria ,strings);
                 break ;

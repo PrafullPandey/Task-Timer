@@ -1,8 +1,10 @@
 package com.vaio.p2.tasktimer;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -25,15 +27,59 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String projection[] = {TaskContract.Column.Name , TaskContract.Column.TASK_DESCRIPTOR };
-        ContentResolver contentResolver = getContentResolver();
-        Cursor cursor = contentResolver.query(TaskContract.CONTENT_URI,projection,null,null,TaskContract.Column.SORTORDER);
+        String projection[] = {TaskContract.Column._ID,
+                TaskContract.Column.Name,
+                TaskContract.Column.TASK_DESCRIPTOR,
+                TaskContract.Column.SORTORDER};
 
-        if(cursor!=null){
-            Log.d(TAG, "onCreate: no of rows is "+cursor.getCount());
-            while(cursor.moveToNext()){
-                for(int i=0;i<cursor.getCount();i++){
-                    Log.d(TAG, "onCreate: "+cursor.getColumnName(i)+" : "+cursor.getString(i));
+        ContentResolver contentResolver = getContentResolver();
+
+        ContentValues values = new ContentValues();
+/*
+        values.put(TaskContract.Column.Name , "Android");
+        values.put(TaskContract.Column.TASK_DESCRIPTOR, "Android N course");
+        values.put(TaskContract.Column.SORTORDER, 1);
+        Uri uri = contentResolver.insert(TaskContract.CONTENT_URI,values);
+*/
+
+/*       values.put(TaskContract.Column.Name , "M-L");
+        values.put(TaskContract.Column.TASK_DESCRIPTOR, "ML A-Z course");
+
+        int count  = contentResolver.update(TaskContract.buildTaskUri(2),values,null,null);
+        Log.d(TAG, "onCreate: "+count+" records updated");
+*/
+
+/*
+        values.put(TaskContract.Column.TASK_DESCRIPTOR, "Android SQLite Test");
+        values.put(TaskContract.Column.SORTORDER, 20);
+        String selection = TaskContract.Column.SORTORDER+" = "+1;
+        int count  = contentResolver.update(TaskContract.CONTENT_URI,values,selection,null);
+        Log.d(TAG, "onCreate: "+count+" records updated");
+*/
+
+/*
+        values.put(TaskContract.Column.TASK_DESCRIPTOR, "Android SQLite Test for deletion");
+        String selection = TaskContract.Column.SORTORDER+" = ?";
+        String args[] = {"20"};
+        int count  = contentResolver.update(TaskContract.CONTENT_URI,values,selection,args);
+        Log.d(TAG, "onCreate: "+count+" records updated");
+*/
+        int count = contentResolver.delete(TaskContract.buildTaskUri(2),null,null);
+
+
+
+
+        Cursor cursor = contentResolver.query(TaskContract.CONTENT_URI,
+                projection,
+                null,
+                null,
+                TaskContract.Column.SORTORDER);
+
+        if (cursor != null) {
+            Log.d(TAG, "onCreate: no of rows is " + cursor.getCount());
+            while (cursor.moveToNext()) {
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    Log.d(TAG, "onCreate: " + cursor.getColumnName(i) + " : " + cursor.getString(i));
                 }
                 Log.d(TAG, "onCreate: ***************************");
             }
