@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -123,22 +124,182 @@ public class AppProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return null;
+        final int match = sUriMatcher.match(uri);
+
+        switch(match){
+            case TASK:
+                return TaskContract.CONTENT_TYPE;
+
+            case TASK_ID:
+                return TaskContract.CONTENT_ITEM_TYPE;
+/*
+            case TIMMINGS:
+                return TimmingsContract.CONTENT_TYPE;
+
+            case TIMMINGS_ID:
+                return TimmingsContract.CONTENT_ITEM_TYPE;
+
+
+            case TASK_DURATION:
+                return DurationContract.CONTENT_TYPE;
+
+            case TASK_DURATION_ID:
+                return DurationContract.CONTENT_ITEM_TYPE;
+            */
+            default:
+                throw new IllegalArgumentException("Unknown Uri "+ uri );
+
+        }
+
     }
 
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        Log.d(TAG, "insert: Entering insert called with uri "+uri);
+
+        final int match = sUriMatcher.match(uri);
+
+        final SQLiteDatabase db;
+
+        Uri resultUri;
+        long recordId;
+
+        switch (match){
+            case TASK:
+                db = mOpenHelper.getWritableDatabase();
+                recordId = db.insert(TaskContract.TABLE_NAME,null,contentValues);
+                if(recordId>=0){
+                    resultUri=TaskContract.buildTaskUri(recordId);
+
+                }else{
+                    throw new android.database.SQLException("failed to insert "+uri.toString());
+                }
+
+                break;
+
+/*
+            case TIMMINGS:
+                db = mOpenHelper.getWritableDatabase();
+                recordId = db.insert(TimmingsContract.Timmings.buildTimmingUri(recordId));
+                if(recordId>=0){
+                    resultUri = TimmingsContract.Timmings.buildTimmingUri(recordId);
+                }else{
+                    throw new android.database.SQLException("failed to insert "+uri.toString());
+                }
+                break;
+*/
+
+            default:
+                throw new IllegalArgumentException("unknown : "+uri);
+
+        }
+
         return null;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+
+        Log.d(TAG, "delete: uri is "+uri);
+        final int match = sUriMatcher.match(uri);
+        Log.d(TAG, "delete: match is "+match);
+
+        final SQLiteDatabase db ;
+
+        String selectionCriteria;
+        int count;
+
+        switch (match){
+            case TASK:
+                db = mOpenHelper.getWritableDatabase();
+                count = db.delete(TaskContract.TABLE_NAME ,s ,strings);
+                break ;
+
+            case TASK_ID:
+                db = mOpenHelper.getWritableDatabase();
+                long taskId=TaskContract.getTaskid(uri);
+                selectionCriteria = TaskContract.Column._ID+" = "+taskId;
+                if(selectionCriteria!=null && selectionCriteria.length()>=0){
+                    selectionCriteria+=" AND ("+s+")";
+                }
+                count = db.delete(TaskContract.TABLE_NAME ,selectionCriteria ,strings);
+                break ;
+/*
+
+            case TIMMINGS:
+                db = mOpenHelper.getWritableDatabase();
+                count = db.delete(TimmingsContract.TABLE_NAME  ,s ,strings);
+                break ;
+
+            case TIMMINGS_ID:
+                db = mOpenHelper.getWritableDatabase();
+                long taskId=TimmingsContract.getTaskid(uri);
+                selectionCriteria = TaskContract.Column._ID+" = "+taskId;
+                if(selectionCriteria!=null && selectionCriteria.length()>=0){
+                    selectionCriteria+=" AND ("+s+")";
+                }
+                count = db.delete(TimmingsContract.TABLE_NAME ,selectionCriteria ,strings);
+                break ;
+*/
+
+            default:
+                throw new IllegalArgumentException("unknown uri "+uri);
+
+        }
+        Log.d(TAG, "delete: returning "+count);
+        return count;
     }
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+        Log.d(TAG, "update: uri is "+uri);
+        final int match = sUriMatcher.match(uri);
+        Log.d(TAG, "update: match is "+match);
+
+        final SQLiteDatabase db ;
+
+        String selectionCriteria;
+        int count;
+
+        switch (match){
+            case TASK:
+                db = mOpenHelper.getWritableDatabase();
+                count = db.update(TaskContract.TABLE_NAME ,contentValues ,s ,strings);
+                break ;
+
+            case TASK_ID:
+                db = mOpenHelper.getWritableDatabase();
+                long taskId=TaskContract.getTaskid(uri);
+                selectionCriteria = TaskContract.Column._ID+" = "+taskId;
+                if(selectionCriteria!=null && selectionCriteria.length()>=0){
+                    selectionCriteria+=" AND ("+s+")";
+                }
+                count = db.update(TaskContract.TABLE_NAME ,contentValues ,selectionCriteria ,strings);
+                break ;
+/*
+
+            case TIMMINGS:
+                db = mOpenHelper.getWritableDatabase();
+                count = db.update(TimmingsContract.TABLE_NAME ,contentValues ,s ,strings);
+                break ;
+
+            case TIMMINGS_ID:
+                db = mOpenHelper.getWritableDatabase();
+                long taskId=TimmingsContract.getTaskid(uri);
+                selectionCriteria = TaskContract.Column._ID+" = "+taskId;
+                if(selectionCriteria!=null && selectionCriteria.length()>=0){
+                    selectionCriteria+=" AND ("+s+")";
+                }
+                count = db.update(TimmingsContract.TABLE_NAME ,contentValues ,selectionCriteria ,strings);
+                break ;
+*/
+
+            default:
+                throw new IllegalArgumentException("unknown uri "+uri);
+
+        }
+        Log.d(TAG, "update: returning "+count);
+        return count;
     }
 }
