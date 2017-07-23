@@ -21,11 +21,19 @@
         </activity>
 
         <provider
-            android:name="com.vaio.p2.tasktimer.AppProvider"
+            android:name=".AppProvider"
             android:authorities="com.vaio.p2.tasktimer.provider"
-            android:exported="false"/>
+            android:exported="false" />
 
+        <activity
+            android:name=".AddEditActivity"
+            android:label="@string/title_activity_add_edit"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vaio.p2.tasktimer.MainActivity" />
+        </activity>
     </application>
-
 
 </manifest>

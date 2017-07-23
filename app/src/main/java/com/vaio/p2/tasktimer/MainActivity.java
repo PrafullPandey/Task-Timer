@@ -2,6 +2,7 @@ package com.vaio.p2.tasktimer;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -19,6 +20,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+//    will tell whether the activity is in two pane mode
+//    i.e running in landscape mode on tablet
+    private boolean mTwoPane =false;
+    public static final String ADD_EDIT_FRAGMENT = "AddEditFragment";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +34,19 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
+
+
+
+
+
+
+
+
+
+
+/*
         String projection[] = {TaskContract.Column._ID,
                 TaskContract.Column.Name,
                 TaskContract.Column.TASK_DESCRIPTOR,
@@ -35,35 +55,35 @@ public class MainActivity extends AppCompatActivity {
         ContentResolver contentResolver = getContentResolver();
 
         ContentValues values = new ContentValues();
-/*
+
         values.put(TaskContract.Column.Name , "Android");
         values.put(TaskContract.Column.TASK_DESCRIPTOR, "Android N course");
         values.put(TaskContract.Column.SORTORDER, 1);
         Uri uri = contentResolver.insert(TaskContract.CONTENT_URI,values);
-*/
 
-/*       values.put(TaskContract.Column.Name , "M-L");
+
+       values.put(TaskContract.Column.Name , "M-L");
         values.put(TaskContract.Column.TASK_DESCRIPTOR, "ML A-Z course");
 
         int count  = contentResolver.update(TaskContract.buildTaskUri(2),values,null,null);
         Log.d(TAG, "onCreate: "+count+" records updated");
-*/
 
-/*
+
+
         values.put(TaskContract.Column.TASK_DESCRIPTOR, "Android SQLite Test");
         values.put(TaskContract.Column.SORTORDER, 20);
         String selection = TaskContract.Column.SORTORDER+" = "+1;
         int count  = contentResolver.update(TaskContract.CONTENT_URI,values,selection,null);
         Log.d(TAG, "onCreate: "+count+" records updated");
-*/
 
-/*
+
+
         values.put(TaskContract.Column.TASK_DESCRIPTOR, "Android SQLite Test for deletion");
         String selection = TaskContract.Column.SORTORDER+" = ?";
         String args[] = {"20"};
         int count  = contentResolver.update(TaskContract.CONTENT_URI,values,selection,args);
         Log.d(TAG, "onCreate: "+count+" records updated");
-*/
+
         int count = contentResolver.delete(TaskContract.buildTaskUri(2),null,null);
 
 
@@ -89,15 +109,8 @@ public class MainActivity extends AppCompatActivity {
 
 //        AppDatabase appDatabase = AppDatabase.getInstance(this);
 //        final SQLiteDatabase sqLiteDatabase = appDatabase.getReadableDatabase();
+        */
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     @Override
@@ -115,10 +128,39 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.menumain_settings) {
-            return true;
+        switch (id){
+            case R.id.menumain_addTask:
+                taskEditRequest(null);
+                break;
+            case R.id.menumain_generate:
+                break;
+            case R.id.menumain_settings:
+                break;
+            case R.id.menumain_showabout:
+                break;
+            case R.id.menumain_showDuration:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void taskEditRequest(Task task){
+        Log.d(TAG, "taskEditRequest: starts");
+        if(mTwoPane){
+            Log.d(TAG, "taskEditRequest: in landscape mode");
+        }else{
+            Log.d(TAG, "taskEditRequest: in single pane mode");
+//            in single pane mode , start the detail activiyt for selected item Id.
+            Intent detailintent = new Intent(MainActivity.this , AddEditActivity.class);
+            if(task!=null){
+//                editing a task
+                detailintent.putExtra(Task.class.getSimpleName() , task);
+                startActivity(detailintent);
+            }else{
+//                adding a new taskk
+                startActivity(detailintent);
+            }
+        }
     }
 }
