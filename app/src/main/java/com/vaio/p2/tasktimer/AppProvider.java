@@ -116,7 +116,10 @@ public class AppProvider extends ContentProvider {
 
         }
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
         Cursor cursor = sQLiteQueryBuilder.query(db,projection,selection,selectionArgs,null,null,sortorder);
+        Log.d(TAG, "query: row in returned cursor is "+ cursor.getCount());
+        cursor.setNotificationUri(getContext().getContentResolver() , uri);
 
         return cursor;
     }
@@ -194,6 +197,13 @@ public class AppProvider extends ContentProvider {
                 throw new IllegalArgumentException("unknown : "+uri);
 
         }
+        if(recordId>=0){
+            //something was inserted
+            Log.d(TAG, "insert: Setting notify change with "+uri);
+            getContext().getContentResolver().notifyChange(uri , null);
+        }else{
+            Log.d(TAG, "insert: nothing inserted");
+        }
 
         return null;
     }
@@ -247,6 +257,13 @@ public class AppProvider extends ContentProvider {
                 throw new IllegalArgumentException("unknown uri "+uri);
 
         }
+        if(count>=0){
+            //something was deleted
+            Log.d(TAG, "delete: Setting notify change with "+uri);
+            getContext().getContentResolver().notifyChange(uri , null);
+        }else{
+            Log.d(TAG, "delete: nothing deleted");
+        }
         Log.d(TAG, "delete: returning "+count);
         return count;
     }
@@ -298,6 +315,13 @@ public class AppProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("unknown uri "+uri);
 
+        }
+        if(count>=0){
+            //something was inserted
+            Log.d(TAG, "update: Setting notify change with "+uri);
+            getContext().getContentResolver().notifyChange(uri , null);
+        }else{
+            Log.d(TAG, "update: nothing updated");
         }
         Log.d(TAG, "update: returning "+count);
         return count;

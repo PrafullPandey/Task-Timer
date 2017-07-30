@@ -8,4 +8,5 @@
     <string name="menumain_generate">Generate Data</string>
     <string name="no_task_msg">No Task Selected</string>
     <string name="title_activity_add_edit">AddEditActivity</string>
+    <string name="instruction">Use the add button (+) in the toolbar above to create new tasks.  Tasks with lower sort orders will be placed higher up the list.  Tasks with the same sort order will be sorted alphabetically.  Tapping a task will start the timer for that task (and will stop the timer for any previous task that was being timed).  Each task has Edit and Delete buttons if you want to change the details or remove the task.</string>
 </resources>

@@ -7,10 +7,13 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.security.InvalidParameterException;
 
@@ -21,6 +24,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private static final String TAG = "MainActivityFragment";
     public static final int LOADER_ID = 0;
+    private CursorRecyclerViewAdapter mCursorAdapter; //add adapter reference
+    private TextView tv =null;
+
 
 
     public MainActivityFragment() {
@@ -31,7 +37,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: starts");
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main,container , false);
+        tv =(TextView)view.findViewById(R.id.no_task);
+        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.task_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mCursorAdapter = new CursorRecyclerViewAdapter(null);
+        recyclerView.setAdapter(mCursorAdapter);
+
+        return view;
     }
 
     @Override
@@ -53,8 +67,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 TaskContract.Column.Name,
                 TaskContract.Column.TASK_DESCRIPTOR,
                 TaskContract.Column.SORTORDER};
-
-        String sortOrder = TaskContract.Column.SORTORDER+" , "+TaskContract.Column.Name;
+//      <order by> Task.SortOrder ,Task.Name COLLATE NOCASE
+        String sortOrder = TaskContract.Column.SORTORDER+" , "+TaskContract.Column.Name+ " COLLATE NOCASE";
 
         switch (id) {
             case LOADER_ID:
@@ -69,7 +83,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.d(TAG, "onLoadFinished: entering load finished");
-        int count = -1;
+        if(data.getCount()!=0)
+            tv.setVisibility(View.GONE);
+        mCursorAdapter.swapCursor(data);
+        int count = mCursorAdapter.getItemCount();
+/*
         if(data!=null){
             while(data.moveToNext()){
                 for(int i= 0;i<data.getColumnCount();i++){
@@ -81,11 +99,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             Log.d(TAG, "onLoadFinished: count is "+count);
 
         }
+*/
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d(TAG, "onLoaderReset: starts");
+        mCursorAdapter.swapCursor(null);
     }
 }
