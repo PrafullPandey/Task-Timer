@@ -108,7 +108,9 @@ public class AddEditActivityFragment extends Fragment {
                     
 
                 }
+
                 Log.d(TAG, "onClick: done editing");
+                getActivity().finish();
             }
         });
         Log.d(TAG, "onCreateView: exiting...");

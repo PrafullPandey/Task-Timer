@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CursorRecyclerViewAdapter.onTaskClickListner{
 
     private static final String TAG = "MainActivity";
 
@@ -33,16 +33,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: starts");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -145,6 +135,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void oneditClick(Task task) {
+        taskEditRequest(task);
+    }
+
+    @Override
+    public void ondeleteClick(Task task) {
+        ContentResolver contentResolver = getContentResolver();
+        contentResolver.delete(TaskContract.buildTaskUri(task.getmId()),null ,null);
+    }
+
     private void taskEditRequest(Task task){
         Log.d(TAG, "taskEditRequest: starts");
         if(mTwoPane){
@@ -163,4 +164,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }
